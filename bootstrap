@@ -1,7 +1,9 @@
 #!/bin/bash
 set -e
 
-virtualenv="virtualenv"
+python3.6 -m pip install --user virtualenv
+
+virtualenv="python3.6 -m virtualenv"
 declare -a packages
 source /etc/os-release
 
