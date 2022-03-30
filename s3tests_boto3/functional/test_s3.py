@@ -1433,7 +1433,7 @@ def test_bucket_listv2_unordered():
     # test simple retrieval
     response = client.list_objects_v2(Bucket=bucket_name, MaxKeys=1000)
     unordered_keys_out = _get_keys(response)
-    eq(len(keys_in), len(unordered_keys_out))
+    eq(len(keys_in) + 3, len(unordered_keys_out))
     eq(keys_in.sort(), unordered_keys_out.sort())
 
     # test retrieval with prefix
@@ -12093,8 +12093,8 @@ def test_put_obj_with_tags():
     data = 'A'*100
 
     tagset = []
-    tagset.append({'Key': 'bar', 'Value': ''})
     tagset.append({'Key': 'foo', 'Value': 'bar'})
+    tagset.append({'Key': 'bar', 'Value': ''})
 
     put_obj_tag_headers = {
         'x-amz-tagging' : 'foo=bar&bar'

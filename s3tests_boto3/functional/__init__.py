@@ -103,10 +103,10 @@ def nuke_bucket(client, bucket):
     batch_size = 128
     max_retain_date = None
 
-    # list and delete objects in batches
-    for objects in list_versions(client, bucket, batch_size):
-        delete = client.delete_objects(Bucket=bucket,
-                Delete={'Objects': objects, 'Quiet': True},
+    # list and delete objects
+    for o in get_objects_list(bucket, client):
+        delete = client.delete_object(Bucket=bucket,
+                Key=o,
                 BypassGovernanceRetention=True)
 
         # check for object locks on 403 AccessDenied errors
@@ -135,9 +135,9 @@ bucket cleanup'.format(bucket, delta.total_seconds()))
                     'seconds for object locks to expire')
             time.sleep(delta.total_seconds())
 
-        for objects in list_versions(client, bucket, batch_size):
-            client.delete_objects(Bucket=bucket,
-                    Delete={'Objects': objects, 'Quiet': True},
+        for o in get_objects_list(bucket, client):
+            client.delete_object(Bucket=bucket,
+                    Key=o,
                     BypassGovernanceRetention=True)
 
     client.delete_bucket(Bucket=bucket)
