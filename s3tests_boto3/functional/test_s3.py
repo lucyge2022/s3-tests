@@ -3772,6 +3772,70 @@ def _setup_bucket_acl(bucket_acl=None):
 
     return bucket_name
 
+'''
+@attr(resource='object')
+@attr(method='put')
+@attr(operation='Test creating objects with special chars')
+@attr(assertion='succeeds')
+def test_alluxio_put_object_special_char():
+    bucket_name = get_new_bucket_name()
+    client = get_client()
+    client.create_bucket(Bucket=bucket_name)
+    key_list = [chr(i) for i in range(32, 127) if chr(i) not in ['\\', '.', '/']]
+    print("LUCYDEBUG bucket %s created. key_list:%s" % (bucket_name, key_list))
+    [ALLUXIO] We currently don't support these patterns or chars:
+    1) object names end with ./
+    2) backslash \
+    for key in key_list:
+        print("LUCYDEBUG: put key:[%s]" % key)
+        client.put_object(Bucket=bucket_name, Key=key, Body="abc")
+        response = client.get_object(Bucket=bucket_name, Key=key)
+        body = _get_body(response)
+        eq(body, "abc")
+    # cleanup
+    for key in key_list:
+        client.delete_object(Bucket=bucket_name, Key=key)
+
+
+def _generate_random_filenames(chr_list, length):
+    return "".join([random.choice(chr_list) for i in range(length)]
+
+@attr(resource='object')
+@attr(method='put')
+@attr(operation='Test creating objects with special chars and different suffices')
+@attr(assertion='succeeds')
+def test_alluxio_put_object_file_with_suffices():
+    files_with_suffices = [
+        '.csv',
+        '.parquet',
+        '.txt',
+        '.doc',
+        '.docx',
+        '.pdf',
+        '.html',
+        '.htm'
+        '.xls',
+        '.xlsx',
+        '.tar',
+        '.gz',
+        '.ppt',
+        '.pptx',
+        '.odt']
+    ch_list = [chr(i) for i in range(32, 127) if chr(i) not in ['\\', '.']]
+    bucket_name = get_new_bucket_name()
+    created_file = set()
+    client = get_client()
+    for i in range(100):
+        key = _generate_random_filenames(ch_list, random.randint(10,256)) + random.choice(files_with_suffices)
+        if key in created_file:
+            continue
+        client.put_object(Bucket=bucket_name, Key=key, Body=key)
+        response = client.get_object(Bucket=bucket_name, Key=key)
+        body = _get_body(response)
+        eq(body, key)
+        created_file.add(key)
+'''
+
 @attr(resource='object')
 @attr(method='get')
 @attr(operation='publically readable bucket')
